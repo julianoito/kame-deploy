@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{347EEA92-8471-4F30-AA84-6D60C984CC7E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Kame.Core</RootNamespace>
+    <AssemblyName>Kame.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CharDet">
+      <HintPath>..\Kame.Library\CharDet.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\Kame.Library\EntityFramework.5.0.0\lib\net40\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Data.SqlServerCe, Version=3.5.1.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Messaging" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Data\KameDbContext.cs" />
+    <Compile Include="Data\Mapping\StepMap.cs" />
+    <Compile Include="Data\Mapping\ProjectParameterMap.cs" />
+    <Compile Include="Data\Mapping\StepParameterMap.cs" />
+    <Compile Include="Data\Mapping\RoleMap.cs" />
+    <Compile Include="Data\Mapping\DeployProjectMap.cs" />
+    <Compile Include="Data\Mapping\KameUserMap.cs" />
+    <Compile Include="Entity\BaseEntity.cs" />
+    <Compile Include="Entity\CVS.cs" />
+    <Compile Include="Entity\DeployFile.cs" />
+    <Compile Include="Entity\HostFileStep.cs" />
+    <Compile Include="Entity\IISStep.cs" />
+    <Compile Include="Entity\IProjectExecutionLog.cs" />
+    <Compile Include="Entity\ISQL2005Step.cs" />
+    <Compile Include="Entity\MSMessageQueueStep.cs" />
+    <Compile Include="Entity\PromptComand.cs" />
+    <Compile Include="Entity\SQL2005AdmStep.cs" />
+    <Compile Include="Entity\StepParameter.cs" />
+    <Compile Include="Entity\ProjectParameter.cs" />
+    <Compile Include="Entity\Log\DeployLog.cs" />
+    <Compile Include="Entity\Role.cs" />
+    <Compile Include="Entity\IStepProcessor.cs" />
+    <Compile Include="Entity\Log\LogSchema.cs" />
+    <Compile Include="Entity\Parameter.cs" />
+    <Compile Include="Entity\SQL2005ScriptStep.cs" />
+    <Compile Include="Entity\DeployProject.cs" />
+    <Compile Include="Entity\Step.cs" />
+    <Compile Include="Entity\KameUser.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Views\FrmCVSLogin.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Views\FrmCVSLogin.Designer.cs">
+      <DependentUpon>FrmCVSLogin.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Views\FrmCVSLogin.resx">
+      <DependentUpon>FrmCVSLogin.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
