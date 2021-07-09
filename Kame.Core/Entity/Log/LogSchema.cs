@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlServerCe;
+//using System.Data.SqlServerCe;
 using System.Linq;
 using System.Text;
 
 namespace Kame.Core.Entity.Log
 {
     public class LogSchema
-    {
+    {/*
         public string TableName { get; set; }
         public LogSchemaColunm[] Colunms { get; set; }
 
@@ -71,6 +71,7 @@ namespace Kame.Core.Entity.Log
                 command.ExecuteNonQuery();
             }
         }
+        */
     }
 
     public class LogSchemaColunm
