@@ -35,7 +35,7 @@ namespace Kame.Core.Entity
 
         #endregion
 
-        public override List<StepParameter> ListarParametrosUtilizados()
+        public override List<StepParameter> GetRequiredParameters()
         {
             List<StepParameter> listaParametros = new List<StepParameter>();
 

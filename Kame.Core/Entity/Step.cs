@@ -7,7 +7,6 @@ using System.Xml.Serialization;
 using System.Text;
 
 using Kame.Core.Entity.Log;
-using Kame.Core.Data;
 
 namespace Kame.Core.Entity
 {
@@ -18,10 +17,13 @@ namespace Kame.Core.Entity
 
         public string StepID { get; set; }
         public string Name { get; set; }
+
+        [XmlIgnore]
         public DeployProject Project { get; set; }
+
         [XmlIgnore]
         public Step ParentStep {get;set;}
-        [NotMapped]
+
         public List<StepParameter> Parameters { get; set; }
         public List<Step> ChildSteps { get; set; }
         public string ProcessClass { get; set; }
@@ -30,7 +32,7 @@ namespace Kame.Core.Entity
         public string ParentProjectID { get; set; }
 
         private IStepProcessor _processador = null;
-        [NotMapped]
+
         protected IStepProcessor Processador
         {
             get 
@@ -60,7 +62,7 @@ namespace Kame.Core.Entity
 
         #region Constructor
 
-        private Step() :base()
+        public Step() :base()
         {
         
         }
@@ -74,8 +76,7 @@ namespace Kame.Core.Entity
                 ,Project = project
                 ,ParentProjectID = (project == null ? string.Empty : project.ProjectID)
                 ,ParentStep = parentStep
-                ,ParentStepID = (parentStep == null ? string.Empty : parentStep.StepID)
-                ,EntityState = System.Data.EntityState.Added };
+                ,ParentStepID = (parentStep == null ? string.Empty : parentStep.StepID) };
         }
 
         #endregion
@@ -83,18 +84,6 @@ namespace Kame.Core.Entity
         #region Parameters
 
         public string ExecutionGroup {get;set;}
-
-        public List<StepParameter> ParametrosUtilizados()
-        {
-            if (Processador == null)
-            {
-                return new List<StepParameter>();
-            }
-            else
-            {
-                return this.Processador.ListarParametrosUtilizados();
-            }
-        }
 
         public Parameter GetParameter(string key)
         {
@@ -383,73 +372,7 @@ namespace Kame.Core.Entity
             return targetStep;
         }
 
-        internal void SaveStep(KameDbContext dbContext)
-        {
-            dbContext.Save(this);
-            if (this.Parameters != null)
-            {
-                foreach (StepParameter parameter in this.Parameters)
-                {
-                    parameter.StepID = this.StepID;
-                    dbContext.Save(parameter);
-                }
-            }
-            
-            if (this.ChildSteps != null)
-            {
-                foreach (Step step in this.ChildSteps)
-                {
-                    step.SaveStep(dbContext);
-                }
-            }
-        }
-
-        internal void DeleteStep(KameDbContext dbContext)
-        {
-            if (this.ChildSteps != null)
-            {
-                for (int i = this.ChildSteps.Count - 1; i >= 0; i--)
-                { 
-                    Step step = this.ChildSteps[i];
-                    step.DeleteStep(dbContext);
-                }
-            }
-
-            if (this.Parameters != null)
-            {
-                for (int i = this.Parameters.Count - 1; i >= 0; i--)
-                {
-                    StepParameter parameter = this.Parameters[i];
-                    parameter.EntityState = System.Data.EntityState.Deleted;
-                    dbContext.Save(parameter);
-                }
-            }
-
-            this.EntityState = System.Data.EntityState.Deleted;
-            dbContext.Save(this);
-        }
-
-        
-
-        internal void LoadStepDetails(KameDbContext dbContext)
-        {
-            IQueryable<Step> querySteps = dbContext.Set<Step>();
-            querySteps = querySteps.Where<Step>(s => s.ParentProjectID == this.ParentProjectID && s.ParentStepID == this.StepID);
-            querySteps = querySteps.OrderBy(s => s.Sequence);
-            this.ChildSteps = querySteps.ToList<Step>();
-
-            IQueryable<StepParameter> queryProjectParameters = dbContext.Set<StepParameter>();
-            queryProjectParameters = queryProjectParameters.Where<StepParameter>(p => p.StepID == this.StepID);
-            this.Parameters = queryProjectParameters.ToList<StepParameter>();
-
-            if (this.ChildSteps != null)
-            {
-                foreach (Step step in this.ChildSteps)
-                {
-                    step.LoadStepDetails(dbContext);
-                }
-            }
-        }
+       
 
 
         #endregion

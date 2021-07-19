@@ -89,7 +89,7 @@ namespace Kame.Core.Entity
 			System.Diagnostics.Process p = new System.Diagnostics.Process();
 			p.StartInfo.FileName = command;
 			p.StartInfo.UseShellExecute = false;
-			//p.StartInfo.RedirectStandardOutput = true;
+			//p.StartInfo.RedirectStandardOutput = true;s
 
 			p.StartInfo.CreateNoWindow = false;
 
@@ -121,7 +121,7 @@ namespace Kame.Core.Entity
         {
             return null;
         }
-        public override List<StepParameter> ListarParametrosUtilizados()
+        public override List<StepParameter> GetRequiredParameters()
         {
             return null;
         }

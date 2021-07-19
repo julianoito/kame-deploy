@@ -7,7 +7,7 @@ using System.Text;
 
 namespace Kame.Core.Entity.Log
 {
-    public class LogSchema
+    public class LogSchema2
     {/*
         public string TableName { get; set; }
         public LogSchemaColunm[] Colunms { get; set; }

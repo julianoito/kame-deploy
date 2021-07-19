@@ -50,10 +50,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Kame.ClSoftware\Kame.ClSoftware.csproj">
-      <Project>{E07BF176-2D0A-42D6-879D-8D355428D2BC}</Project>
-      <Name>Kame.ClSoftware</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Kame.Core\Kame.Core.csproj">
       <Project>{347EEA92-8471-4F30-AA84-6D60C984CC7E}</Project>
       <Name>Kame.Core</Name>

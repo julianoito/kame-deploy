@@ -3,3 +3,21 @@
 ################################################################################
 
 /Kame.ClSoftware/obj/Debug
+/Kame.Core/obj/Debug
+/Kame.Data/obj/Debug/.NETFramework,Version=v4.0.AssemblyAttributes.cs
+/Kame.Desktop/obj/x86/Debug
+/Kame.Launcher/obj/x86/Debug
+/Kame.Management.Api/obj
+/Kame.Prompt/obj/x86/Debug
+/Kame.UpdateDeploy/obj/x86/Debug
+/Kame.Web/bin
+/Kame.Prompt/bin/Debug
+/Kame.ClSoftware
+/Kame.Core/bin/Debug
+/Kame.Desktop/bin/Debug
+/Kame.Launcher/bin/Debug
+/Kame.Management.Api/bin/Debug/netcoreapp3.1
+/Kame.Management.Core/bin/Debug/netcoreapp3.1
+/Kame.Management.Core/obj
+/Kame.Management.Desktop/bin/Debug/netcoreapp3.1
+/Kame.Management.Desktop/obj

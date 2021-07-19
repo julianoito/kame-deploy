@@ -93,7 +93,7 @@ namespace Kame.Core.Entity
             return new List<DeployFile>();
         }
 
-        public override List<StepParameter> ListarParametrosUtilizados()
+        public override List<StepParameter> GetRequiredParameters()
         {
             List<StepParameter> listaParametros = new List<StepParameter>();
 

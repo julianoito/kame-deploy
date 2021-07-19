@@ -20,7 +20,7 @@ namespace Kame.Core.Entity
 
         public abstract void Execute(Step step, List<DeployFile> ignoreList, IProjectExecutionLog executionLog, DeployLog log, out string errorMessage);
         public abstract List<DeployFile> CheckExecution(Step step, DeployLog log);
-        public abstract List<StepParameter> ListarParametrosUtilizados();
+        public abstract List<StepParameter> GetRequiredParameters();
 
         protected void LoadParameters(Step step)
         {

@@ -44,7 +44,7 @@ namespace Kame.Core.Entity
         {
             return null;
         }
-        public override List<StepParameter> ListarParametrosUtilizados()
+        public override List<StepParameter> GetRequiredParameters()
         {
             return null;
         }

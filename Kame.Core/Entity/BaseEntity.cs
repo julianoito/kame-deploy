@@ -9,11 +9,8 @@ namespace Kame.Core.Entity
     [Serializable]
     public class BaseEntity
     {
-        public System.Data.EntityState EntityState { get; set; }
-
         protected BaseEntity()
         {
-            this.EntityState = System.Data.EntityState.Modified;
         }
     }
 }

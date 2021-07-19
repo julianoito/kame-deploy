@@ -16,7 +16,6 @@ namespace Kame.Core.Entity
 
         protected Parameter()
         {
-            this.EntityState = System.Data.EntityState.Modified;
         }
 
         public bool GetBoolValue()

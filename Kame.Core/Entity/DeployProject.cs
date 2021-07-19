@@ -9,7 +9,6 @@ using System.Text;
 using System.Xml.Serialization;
 
 using Kame.Core.Entity.Log;
-using Kame.Core.Data;
 
 namespace Kame.Core.Entity
 {
@@ -22,7 +21,6 @@ namespace Kame.Core.Entity
         public string Name { get; set; }
         public int UserID { get; set; }
 
-		[NotMapped]
 		[XmlIgnore]
 		public bool LogSaved { get; set; }
 
@@ -31,15 +29,12 @@ namespace Kame.Core.Entity
 
         [XmlElement(typeof(ProjectParameter))]
         public List<ProjectParameter> Parameters { get; set; }
-        [NotMapped]
         [XmlElement(typeof(Step))]
         public virtual List<Step> Steps { get; set; }
 
-        [NotMapped]
         [XmlElement(typeof(Step))]
         public virtual List<Step> RestoreSteps { get; set; }
 
-        [NotMapped]
         [XmlIgnore]
         public virtual List<Step> DeletedSteps { get; set; }
 
@@ -47,15 +42,10 @@ namespace Kame.Core.Entity
 
         #region construtores
 
-        private DeployProject()
+        public DeployProject()
         {
-            this.EntityState = System.Data.EntityState.Modified;
         }
         
-        public static DeployProject NewDeployProject(KameUser user)
-        {
-            return new DeployProject() { EntityState = System.Data.EntityState.Added, ProjectID = Guid.NewGuid().ToString(), UserID = user.UserID  };
-        }
 
         public static DeployProject LoadDeployProject(string template, List<ProjectParameter> parametros)
         {
@@ -125,7 +115,16 @@ namespace Kame.Core.Entity
 
         #endregion
 
-		
+        public string Serialize()
+        {
+            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(DeployProject), new Type[] { typeof(ProjectParameter), typeof(Parameter), typeof(Step) });
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+            serializer.Serialize(sw, this);
+            sw.Close();
+
+            return sb.ToString();
+        }
 
         public void Processar(IProjectExecutionLog executionLog, List<string> executionGroups, bool restoreMode, out string errorMessage)
         {
@@ -148,7 +147,6 @@ namespace Kame.Core.Entity
 
             this.log = new DeployLog(this);
             errorMessage = string.Empty;
-			this.log.StartProjectLog();
 
             if (restoreMode && this.RestoreSteps != null)
             {
@@ -177,7 +175,6 @@ namespace Kame.Core.Entity
 		{
 			if (this.log != null)
 			{
-				log.EndProjectLog();
 				log.ExportXML();
 				this.LogSaved = true;
 			}
@@ -201,7 +198,7 @@ namespace Kame.Core.Entity
             return null;
         }
 
-        public static List<DeployProject> GetProjects(DeployProject projectFilter, KameUser user)
+        /*public static List<DeployProject> GetProjects(DeployProject projectFilter, KameUser user)
         {
             KameDbContext dbContext = new KameDbContext();
 
@@ -232,8 +229,9 @@ namespace Kame.Core.Entity
             List<DeployProject> projectList = query.ToList<DeployProject>();
             dbContext.Dispose();
             return projectList;
-        }
+        }*/
 
+        /*
         public static DeployProject GetProjectById(string projectId, KameUser user)
         {
             DeployProject project = new DeployProject() { ProjectID = projectId };
@@ -247,9 +245,9 @@ namespace Kame.Core.Entity
                 return project;
             }
             return null;
-        }
+        }*/
 
-        public void Save()
+        /*public void Save()
         {
             KameDbContext dbContext = new KameDbContext();
 
@@ -283,11 +281,12 @@ namespace Kame.Core.Entity
 
             dbContext.SaveChanges();
             this.DeletedSteps = null;
-        }
+        }*/
 
         /// <summary>
         /// 
         /// </summary>
+/*
         private void LoadDetails()
         {
             KameDbContext dbContext = new KameDbContext();
@@ -309,6 +308,7 @@ namespace Kame.Core.Entity
                 }
             }
         }
+        */
 
         public void AddProjectParameter(string parameterKey)
         {
@@ -415,13 +415,5 @@ namespace Kame.Core.Entity
 			return executionGroups;
 		}
 
-        public byte[] Serialize()
-        {
-            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(DeployProject), new Type[]{ typeof(ProjectParameter), typeof(Parameter), typeof(Step) });
-            MemoryStream stream = new MemoryStream();
-            serializer.Serialize(stream, this);
-
-            return stream.ToArray();
-        }
     }
 }

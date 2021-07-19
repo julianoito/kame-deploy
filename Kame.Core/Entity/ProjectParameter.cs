@@ -17,14 +17,13 @@ namespace Kame.Core.Entity
 
         public static ProjectParameter NewProjectParameter()
         {
-            return new ProjectParameter() { EntityState = System.Data.EntityState.Added, ParameterID = Guid.NewGuid().ToString() };
+            return new ProjectParameter() {  ParameterID = Guid.NewGuid().ToString() };
         }
 
         public static ProjectParameter NewProjectParameter(string parameterKey, string parameterValue, string parameterDescription, DeployProject project)
         {
             return new ProjectParameter() { 
-                EntityState = System.Data.EntityState.Added
-                ,ParameterID = Guid.NewGuid().ToString()
+                ParameterID = Guid.NewGuid().ToString()
                 ,ParameterKey = parameterKey
                 ,ParameterValue = parameterValue
                 ,ParameterDescription = parameterDescription
