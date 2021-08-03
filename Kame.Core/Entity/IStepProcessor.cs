@@ -67,16 +67,24 @@ namespace Kame.Core.Entity
 			return encoding;
 		}
 
-        protected string ReadTextFile(string caminho)
+		protected string ReadTextFile(string caminho)
+		{
+			Encoding encoding;
+			return ReadTextFile(caminho, out encoding);
+		}
+
+		protected string ReadTextFile(string caminho, out Encoding encoding)
         {
             string conteudoArquivo = string.Empty;
 
             FileStream strm = null;
             StreamReader reader = null;
-            try
+			encoding = null;
+
+			try
             {
 				bool encodeDetected = false;
-				Encoding encoding = GetEncode(caminho, out encodeDetected);
+				encoding = GetEncode(caminho, out encodeDetected);
 
                 strm = File.OpenRead(caminho);
 				reader = new StreamReader(strm, encoding, !encodeDetected);

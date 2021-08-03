@@ -21,7 +21,13 @@ namespace Kame.Prompt
             bool restoreMode = false;
 
             List<ProjectParameter> parametros = new List<ProjectParameter>();
-            Console.WriteLine("Kame Deploy Manager - v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version);
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Blue;
+            Console.WriteLine("  Kame Deploy Manager - v" + System.Reflection.Assembly.GetExecutingAssembly().GetName().Version + "  \r\n");
+
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.BackgroundColor = ConsoleColor.Black;
+
             if (args != null && args.Length > 0)
             {
                 if (args.Length == 1 && args[0] == "/?")
@@ -115,7 +121,7 @@ namespace Kame.Prompt
     {
         public void SetMessage(string step, string stepDetail)
         {
-            Console.WriteLine("Processing " + step + " - " + stepDetail);
+            Console.WriteLine(step + (string.IsNullOrEmpty(stepDetail) ? string.Empty : (" - " + stepDetail)));
         }
 
 		public void SetMessageFixedLine(string message, string messagePrefix, string messageDetail)

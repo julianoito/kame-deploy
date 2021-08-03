@@ -220,7 +220,7 @@ namespace Kame.Core.Entity
 
                 if (executionLog != null)
                 {
-                    executionLog.SetMessage("Executando step " + this.Name, string.Empty);
+                    executionLog.SetMessage("Processing step: " + this.Name, string.Empty);
                 }
                 log.StartStepLog(this);
                 if (this.Processador != null)
@@ -250,7 +250,7 @@ namespace Kame.Core.Entity
                 }
 
 
-                mensagemLog = "Step executado";
+                mensagemLog = "Step executed";
             }
             catch(Exception ex)
             {

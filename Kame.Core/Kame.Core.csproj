@@ -83,6 +83,8 @@
     <Compile Include="Entity\BaseEntity.cs" />
     <Compile Include="Entity\CVS.cs" />
     <Compile Include="Entity\DeployFile.cs" />
+    <Compile Include="Entity\TextFileConfig.cs" />
+    <Compile Include="Entity\GitClonePull.cs" />
     <Compile Include="Entity\HostFileStep.cs" />
     <Compile Include="Entity\IISStep.cs" />
     <Compile Include="Entity\IProjectExecutionLog.cs" />
