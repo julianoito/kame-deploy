@@ -26,6 +26,8 @@ namespace Kame.Management.Desktop
             this.txtID.Visible = Config.ApplicationMode != Config.AppMode.File;
             this.txtName.Enabled = Config.ApplicationMode != Config.AppMode.File;
 
+            this.tvSteps.ImageList = this.iconImgList;
+
             tvSteps.Nodes.Clear();
             _treeStepMap = new Dictionary<string, Step>();
             _treeNodeMap = new Dictionary<string, TreeNode>();
@@ -54,13 +56,36 @@ namespace Kame.Management.Desktop
             this.btnSaveAs.Visible = Config.ApplicationMode == Config.AppMode.File;
         }
 
+        private string GetStepDescription(Step step)
+        {
+            return step.Name + (string.IsNullOrEmpty(step.ExecutionGroup) ? string.Empty : "  (Grupo " + step.ExecutionGroup + ")");
+        }
+
+        private int GetStepIconIndex(Step step)
+        {
+            if (!string.IsNullOrEmpty(step.ProcessClass))
+            {
+                for (int i = 0; i < Config.ProcessoClassList.Count; i++)
+                {
+                    if (step.ProcessClass == Config.ProcessoClassList[i].FullClassName && Config.ProcessoClassList[i].IconIndex.HasValue)
+                    {
+                        return Config.ProcessoClassList[i].IconIndex.Value;
+                    }
+                }
+            }
+            return 0;
+        }
+
         private void AddStepToTreeView(Step step, TreeNodeCollection nodeList)
         {
             TreeNode treeNode = new TreeNode();
             treeNode.Name = step.Name;
-            treeNode.Text = step.Name;
+            treeNode.Text = this.GetStepDescription(step);
             treeNode.Tag = Guid.NewGuid().ToString();
             treeNode.ContextMenuStrip = new ContextMenuStrip();
+
+            treeNode.ImageIndex = GetStepIconIndex(step);
+            treeNode.SelectedImageIndex = treeNode.ImageIndex;
 
             ToolStripMenuItem menu = new ToolStripMenuItem();
             menu.Text = "Editar";
@@ -195,7 +220,9 @@ namespace Kame.Management.Desktop
 
             if (Config.FrmStep.SaveStep)
             {
-                _treeNodeMap[tag].Text = Config.FrmStep.Step.Name;
+                _treeNodeMap[tag].Text = this.GetStepDescription(Config.FrmStep.Step);
+                _treeNodeMap[tag].ImageIndex = GetStepIconIndex(Config.FrmStep.Step);
+                _treeNodeMap[tag].SelectedImageIndex = _treeNodeMap[tag].ImageIndex;
             }
         }
 
@@ -222,6 +249,24 @@ namespace Kame.Management.Desktop
                     SaveFile(string.Empty);
                     break;
             }
+        }
+
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
+        public static extern bool ReleaseCapture();
+        private void lblTitle_MouseDown(object sender, MouseEventArgs e)
+        {
+            ReleaseCapture();
+            SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

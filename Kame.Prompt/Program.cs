@@ -17,7 +17,7 @@ namespace Kame.Prompt
         static int Main(string[] args)
         {
             string caminhoTemplate = string.Empty;
-            List<string> executionGroups = new List<string>();
+            List<string> executionGroupList = new List<string>();
             bool restoreMode = false;
 
             List<ProjectParameter> parametros = new List<ProjectParameter>();
@@ -33,12 +33,12 @@ namespace Kame.Prompt
                 if (args.Length == 1 && args[0] == "/?")
                 {
                     Console.WriteLine("kame.prompt /template=\"\" [/workspace=\"\"] ");
-                    Console.WriteLine("Parametros esperados:");
-                    Console.WriteLine("template\tCaminho do template a ser utilizado");
-                    Console.WriteLine("workspace\tCaminho do workspace do deply");
-                    Console.WriteLine("restoremode\tDefine se o Kame está em retore mode");
-                    Console.WriteLine("replaceLog\tCaminho do log do Kame que susbtituirá o logo atual em um restore");
-                    
+                    Console.WriteLine("Parameters:");
+                    Console.WriteLine("template\ttemplate path");
+                    Console.WriteLine("workspace\tWorkspace path");
+                    Console.WriteLine("restoremode\tDefine Kame in retore mode");
+                    Console.WriteLine("ExecutionGroups\tFilter execution steps when supplied, use \",\" to separete parameters");
+
                     Console.ReadKey();
                     return -1;
                 }
@@ -50,15 +50,29 @@ namespace Kame.Prompt
 
                         if (parametro.Length == 2 && !string.IsNullOrEmpty(parametro[0]) && !string.IsNullOrEmpty(parametro[1]) && parametro[0][0]=='/')
                         {
-                            parametros.Add(ProjectParameter.NewProjectParameter(parametro[0].Substring(1), parametro[1], string.Empty, null));
-
-                            if (parametro[0].Substring(1).ToLower() == "template")
+                            if (parametro[0].Substring(1).ToLower() == "executiongroups")
                             {
-                                caminhoTemplate = parametro[1];
+                                string[] executionGroupsListAux = parametro[1].Split(',');
+                                foreach (string executionGroup in executionGroupsListAux)
+                                {
+                                    if (!string.IsNullOrEmpty(executionGroup.Trim()))
+                                    {
+                                        executionGroupList.Add(executionGroup.Trim());
+                                    }
+                                }
                             }
-                            else if (parametro[0].Substring(1).ToLower() == "restoremode" && parametro[1].ToLower().Trim() == "true")
+                            else
                             {
-                                restoreMode = true;
+                                parametros.Add(ProjectParameter.NewProjectParameter(parametro[0].Substring(1), parametro[1], string.Empty, null));
+
+                                if (parametro[0].Substring(1).ToLower() == "template")
+                                {
+                                    caminhoTemplate = parametro[1];
+                                }
+                                else if (parametro[0].Substring(1).ToLower() == "restoremode" && parametro[1].ToLower().Trim() == "true")
+                                {
+                                    restoreMode = true;
+                                }
                             }
                         }
                     }                    
@@ -67,7 +81,7 @@ namespace Kame.Prompt
             }
             else
             {
-                Console.WriteLine("Template não informado. Utilize o parâmetro /? para mais informações.");
+                Console.WriteLine("Template not provided. Use /? for more information.");
             }
 
             if (caminhoTemplate != string.Empty)
@@ -78,7 +92,7 @@ namespace Kame.Prompt
                 }
                 if (!File.Exists(caminhoTemplate))
                 {
-                    Console.WriteLine("Template não encontrado em '" + caminhoTemplate + "'.");
+                    Console.WriteLine("Template not found: '" + caminhoTemplate + "'.");
                     return -1;
                 }
             }
@@ -103,7 +117,7 @@ namespace Kame.Prompt
 				};
 
                 string errorMessage;
-                projeto.Processar(new ConsoleLog(), executionGroups, restoreMode, out errorMessage);
+                projeto.Processar(new ConsoleLog(), executionGroupList, restoreMode, out errorMessage);
 
                 if (!string.IsNullOrEmpty(errorMessage))
                 {

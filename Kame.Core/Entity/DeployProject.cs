@@ -129,21 +129,6 @@ namespace Kame.Core.Entity
         public void Processar(IProjectExecutionLog executionLog, List<string> executionGroups, bool restoreMode, out string errorMessage)
         {
 			this.LogSaved = false;
-            if (restoreMode)
-            {
-                string logFile = DeployLog.GetLogFileName(this, false);
-
-                if (File.Exists(logFile))
-                {
-                    File.Delete(logFile);
-                }
-
-                Parameter replaceLogParameter = this.GetParameter("replaceLog");
-                if (replaceLogParameter != null && File.Exists(replaceLogParameter.ParameterValue))
-                {
-                    File.Copy(replaceLogParameter.ParameterValue, logFile);
-                }
-            }
 
             this.log = new DeployLog(this);
             errorMessage = string.Empty;

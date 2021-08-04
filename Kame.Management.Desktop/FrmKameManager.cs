@@ -11,14 +11,14 @@ namespace Kame.Management.Desktop
 {
     public partial class FrmKameManager : Form
     {
-        private Button[] _menuList;
+        private Label[] _menuList;
         private List<User> _userList;
         private List<DeployConfig> _depoloyList;
         private string _currentMenu;
         public FrmKameManager()
         {
             InitializeComponent();
-            _menuList = new Button[] { btnDeploys, btnUsers };
+            _menuList = new Label[] { lblMenuDeploys, lblMenuUsers };
         }
 
         private void FrmKameManager_Load(object sender, EventArgs e)
@@ -31,7 +31,17 @@ namespace Kame.Management.Desktop
             MenuSelect(0);
         }
 
+        private void lblMenuDeploys_Click(object sender, EventArgs e)
+        {
+            MenuSelect(0);
+        }
+
         private void btnUsers_Click(object sender, EventArgs e)
+        {
+            MenuSelect(1);
+        }
+
+        private void lblMenuUsers_Click(object sender, EventArgs e)
         {
             MenuSelect(1);
         }
@@ -43,16 +53,13 @@ namespace Kame.Management.Desktop
             {
                 if (i == menu)
                 {
-                    _menuList[i].BackColor = Color.DodgerBlue;
-                    _menuList[i].ForeColor = Color.White;
-                    _menuList[i].Font = new Font("Arial", 14, FontStyle.Bold);
+                    _menuList[i].Font = new Font(_menuList[i].Font.Name, _menuList[i].Font.SizeInPoints, FontStyle.Bold | FontStyle.Underline);
                     _currentMenu = _menuList[i].Tag.ToString();
                 }
                 else
                 {
-                    _menuList[i].BackColor = Color.Gray;
-                    _menuList[i].ForeColor = Color.Black;
-                    _menuList[i].Font = new Font("Arial", 14, FontStyle.Regular);
+                    _menuList[i].Font = new Font(_menuList[i].Font.Name, _menuList[i].Font.SizeInPoints, FontStyle.Regular);
+                    
 
                 }
             }
@@ -139,11 +146,7 @@ namespace Kame.Management.Desktop
             }
         }
 
-        private void FrmKameManager_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Config.FrmDatabaseConnect.Close();
-            Config.FrmSelectMode.Close();
-        }
+        
 
         private void btnNewRecord_Click(object sender, EventArgs e)
         {
@@ -163,8 +166,28 @@ namespace Kame.Management.Desktop
                     ListUsers();
                     break;
             }
-
-
         }
+
+        public const int WM_NCLBUTTONDOWN = 0xA1;
+        public const int HT_CAPTION = 0x2;
+
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
+        public static extern int SendMessage(IntPtr hWnd, int Msg, int wParam, int lParam);
+        [System.Runtime.InteropServices.DllImportAttribute("user32.dll")]
+        public static extern bool ReleaseCapture();
+        private void lblTitle_MouseDown(object sender, MouseEventArgs e)
+        {
+            ReleaseCapture();
+            SendMessage(Handle, WM_NCLBUTTONDOWN, HT_CAPTION, 0);
+        }
+
+        private void btnClose_Click(object sender, EventArgs e)
+        {
+            this.Close();
+            Config.FrmDatabaseConnect.Hide();
+            Config.FrmSelectMode.Show();
+        }
+
+
     }
 }
