@@ -5,7 +5,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
+using System.Xml;
 using System.Xml.Serialization;
 
 using Kame.Core.Entity.Log;
@@ -64,27 +66,7 @@ namespace Kame.Core.Entity
                     project.Parameters = new List<ProjectParameter>();
                 }
 
-                if (parametros != null)
-                {
-                    foreach (ProjectParameter parametro in parametros)
-                    {
-                        ProjectParameter parametroExistente = null;
-                        var consulta = project.Parameters.Where<ProjectParameter>(f => f.ParameterKey == parametro.ParameterKey);
-                        if (consulta.Count<ProjectParameter>() > 0)
-                        {
-                            parametroExistente = consulta.First<ProjectParameter>();
-                        }
-
-                        if (parametroExistente != null)
-                        {
-                            parametroExistente.ParameterKey = parametro.ParameterKey;
-                        }
-                        else
-                        {
-                            project.Parameters.Add(parametro);
-                        }
-                    }
-                }
+                project.AddProjectParameters(parametros);
 
                 if (project.Steps == null)
                 {
@@ -113,6 +95,31 @@ namespace Kame.Core.Entity
             return project;
         }
 
+        public void AddProjectParameters(List<ProjectParameter> parametros)
+        {
+            if (parametros != null)
+            {
+                foreach (ProjectParameter parametro in parametros)
+                {
+                    ProjectParameter parametroExistente = null;
+                    var consulta = this.Parameters.Where<ProjectParameter>(f => f.ParameterKey == parametro.ParameterKey);
+                    if (consulta.Count<ProjectParameter>() > 0)
+                    {
+                        parametroExistente = consulta.First<ProjectParameter>();
+                    }
+
+                    if (parametroExistente != null)
+                    {
+                        parametroExistente.ParameterKey = parametro.ParameterKey;
+                    }
+                    else
+                    {
+                        this.Parameters.Add(parametro);
+                    }
+                }
+            }
+        }
+
         #endregion
 
         public string Serialize()
@@ -126,11 +133,23 @@ namespace Kame.Core.Entity
             return sb.ToString();
         }
 
+        public static DeployProject Deserialize(string deployProject)
+        {
+            DeployProject deployProjectObj;
+            System.Xml.Serialization.XmlSerializer serializer = new System.Xml.Serialization.XmlSerializer(typeof(DeployProject), new Type[] { typeof(ProjectParameter), typeof(Parameter), typeof(Step) });
+            StringReader sw = new StringReader(deployProject);
+            deployProjectObj = serializer.Deserialize(sw) as DeployProject;
+            sw.Close();
+
+            return deployProjectObj;
+        }
+
         public void Processar(IProjectExecutionLog executionLog, List<string> executionGroups, bool restoreMode, out string errorMessage)
         {
 			this.LogSaved = false;
 
             this.log = new DeployLog(this);
+            this.log.Data = DateTime.Now;
             errorMessage = string.Empty;
 
             if (restoreMode && this.RestoreSteps != null)
@@ -164,6 +183,21 @@ namespace Kame.Core.Entity
 				this.LogSaved = true;
 			}
 		}
+
+        public DeployLogXML GetExecutionLog()
+        {
+            if (this.log != null)
+            {
+                try
+                {
+                    return this.log.GetXMlObject();
+                }
+                catch{
+                    
+                }
+            }
+            return null;
+        }
 
         public Parameter GetParameter(string parameterKey)
         {

@@ -28,27 +28,15 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lstData = new System.Windows.Forms.ListBox();
             this.btnNewRecord = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.lblTitle = new System.Windows.Forms.Label();
             this.lblMenuDeploys = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.lblMenuUsers = new System.Windows.Forms.Label();
+            this.lstViewData = new System.Windows.Forms.ListView();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lstData
-            // 
-            this.lstData.BackColor = System.Drawing.Color.Gainsboro;
-            this.lstData.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.lstData.Font = new System.Drawing.Font("Calibri", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.lstData.FormattingEnabled = true;
-            this.lstData.ItemHeight = 19;
-            this.lstData.Location = new System.Drawing.Point(35, 58);
-            this.lstData.Name = "lstData";
-            this.lstData.Size = new System.Drawing.Size(1060, 532);
-            this.lstData.TabIndex = 1;
             // 
             // btnNewRecord
             // 
@@ -131,6 +119,22 @@
             this.lblMenuUsers.Text = "Usuários";
             this.lblMenuUsers.Click += new System.EventHandler(this.lblMenuUsers_Click);
             // 
+            // lstViewData
+            // 
+            this.lstViewData.BackColor = System.Drawing.Color.Gainsboro;
+            this.lstViewData.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.lstViewData.FullRowSelect = true;
+            this.lstViewData.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
+            this.lstViewData.HideSelection = false;
+            this.lstViewData.HoverSelection = true;
+            this.lstViewData.Location = new System.Drawing.Point(35, 53);
+            this.lstViewData.MultiSelect = false;
+            this.lstViewData.Name = "lstViewData";
+            this.lstViewData.Size = new System.Drawing.Size(1060, 525);
+            this.lstViewData.TabIndex = 8;
+            this.lstViewData.UseCompatibleStateImageBehavior = false;
+            this.lstViewData.View = System.Windows.Forms.View.Details;
+            // 
             // FrmKameManager
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
@@ -140,8 +144,8 @@
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnNewRecord);
-            this.Controls.Add(this.lstData);
             this.Controls.Add(this.lblTitle);
+            this.Controls.Add(this.lstViewData);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.MaximizeBox = false;
             this.Name = "FrmKameManager";
@@ -155,12 +159,12 @@
         }
 
         #endregion
-        private System.Windows.Forms.ListBox lstData;
         private System.Windows.Forms.Button btnNewRecord;
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Label lblTitle;
         private System.Windows.Forms.Label lblMenuDeploys;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label lblMenuUsers;
+        private System.Windows.Forms.ListView lstViewData;
     }
 }

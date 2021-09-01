@@ -32,6 +32,7 @@ namespace Kame.Core.Entity
         private DateTime minFileDate;
 		private bool removeSQLTransactions = true;
 		private string SQLServerAlias;
+        private string executerAfterFile;
 
         #endregion
 
@@ -126,7 +127,14 @@ namespace Kame.Core.Entity
                     , "Lista fixa de arquivos que serão executados. Arquivos não listados não serão executados. E a execução dos arquivos seguirá a ordem da lista"
                 )
             );
-			
+
+            listaParametros.Add(
+                StepParameter.NewStepParameter(
+                    "executerAfterFile"
+                    , string.Empty
+                    , "Ignore filenames prior than the parameter in alphabetical order. Incluides file with this patterm."
+                )
+            );
 
             return listaParametros;
         }
@@ -388,9 +396,12 @@ namespace Kame.Core.Entity
                 parametro = step.GetParameter("controleExecucaoScripts");
                 if (parametro == null)
                 {
-                    this.ThrowAplicationException("O parametro controleExecucaoScripts não informado");
+                    this.controleExecucaoScripts = false;
                 }
-                this.controleExecucaoScripts = bool.Parse(parametro.ParameterValue);
+                else
+                {
+                    this.controleExecucaoScripts = bool.Parse(parametro.ParameterValue);
+                }
             }
             catch
             {
@@ -409,21 +420,15 @@ namespace Kame.Core.Entity
             {
             }
 
-			
-
             try
             {
                 parametro = step.GetParameter("executarTodosScripts");
 
-                if (parametro == null)
-                {
-                    this.ThrowAplicationException("O parametro executarTodosScripts não informado");
-                }
                 this.executarTodosScripts = parametro == null ? false : bool.Parse(parametro.ParameterValue);
             }
             catch
             {
-                this.ThrowAplicationException("O parametro executarTodosScripts informado em um formata inválido");
+                this.executarTodosScripts = false;
             }
 
 
@@ -559,10 +564,18 @@ namespace Kame.Core.Entity
                     this.ThrowAplicationException("O parametro listaArquivosFixo informado em um formata inválido");
                 }
             }
-            
+
+            try
+            {
+                parametro = step.GetParameter("executerAfterFile");
+                this.executerAfterFile = parametro.ParameterValue;
+            }
+            catch
+            {
+            }
         }
 
-		private List<DeployFile> ListFiles(Step step, DeployLog log, List<DeployFile> ignoreList, IProjectExecutionLog executionLog)
+        private List<DeployFile> ListFiles(Step step, DeployLog log, List<DeployFile> ignoreList, IProjectExecutionLog executionLog)
         {
             List<DeployFile> fileList = new List<DeployFile>();
 
@@ -574,7 +587,6 @@ namespace Kame.Core.Entity
                     if (!string.IsNullOrEmpty(listaArquivosFixo[i].Trim()))
                     {
                         listaArquivosFixoUtilizada = true;
-
 
                         foreach (string directoryPath in baseDirectories)
                         {
@@ -623,13 +635,21 @@ namespace Kame.Core.Entity
 						{
 							foreach (string ignoreKeyword in this.palavrasChaveIgnorar)
 							{
-								if (!string.IsNullOrEmpty(ignoreKeyword.Trim()) && file.Name.Contains(ignoreKeyword.Trim()))
+								if (!string.IsNullOrEmpty(ignoreKeyword.Trim().ToLower()) && file.Name.Contains(ignoreKeyword.Trim().ToLower()))
 								{
 									ignoreFile = true;
 									break;
 								}
 							}
 						}
+
+                        if (!ignoreFile && !string.IsNullOrEmpty(executerAfterFile))
+                        {
+                            if (string.Compare(file.Name.ToLower(), executerAfterFile.ToLower()) < 0)
+                            {
+                                ignoreFile = true;
+                            }
+                        }
 
 						if (!ignoreFile)
 						{

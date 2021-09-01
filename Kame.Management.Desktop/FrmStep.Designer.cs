@@ -79,7 +79,7 @@
             this.cmbProcessorClass.Location = new System.Drawing.Point(179, 73);
             this.cmbProcessorClass.Name = "cmbProcessorClass";
             this.cmbProcessorClass.Size = new System.Drawing.Size(630, 23);
-            this.cmbProcessorClass.TabIndex = 2;
+            this.cmbProcessorClass.TabIndex = 1;
             // 
             // btnCancel
             // 
@@ -91,7 +91,7 @@
             this.btnCancel.Location = new System.Drawing.Point(916, 591);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(83, 35);
-            this.btnCancel.TabIndex = 3;
+            this.btnCancel.TabIndex = 8;
             this.btnCancel.Text = "Cancelar";
             this.btnCancel.UseVisualStyleBackColor = false;
             this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
@@ -106,7 +106,7 @@
             this.btnSave.Location = new System.Drawing.Point(827, 591);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(83, 35);
-            this.btnSave.TabIndex = 3;
+            this.btnSave.TabIndex = 7;
             this.btnSave.Text = "OK";
             this.btnSave.UseVisualStyleBackColor = false;
             this.btnSave.Click += new System.EventHandler(this.btnSave_Click);
@@ -171,7 +171,7 @@
             this.txtExecutionGroup.Location = new System.Drawing.Point(179, 102);
             this.txtExecutionGroup.Name = "txtExecutionGroup";
             this.txtExecutionGroup.Size = new System.Drawing.Size(630, 23);
-            this.txtExecutionGroup.TabIndex = 0;
+            this.txtExecutionGroup.TabIndex = 2;
             // 
             // label2
             // 

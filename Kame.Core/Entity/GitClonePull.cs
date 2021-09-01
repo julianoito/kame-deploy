@@ -14,6 +14,7 @@ namespace Kame.Core.Entity
         private string branch;
         private string folderName;
         private string depth;
+        private string relativeWorkspacePath;
         private IProjectExecutionLog ExecutionLog;
 
         public override void Execute(Step step, List<DeployFile> ignoreList, IProjectExecutionLog executionLog, DeployLog log, out string errorMessage)
@@ -36,9 +37,9 @@ namespace Kame.Core.Entity
 
             parameters.Add(
                 StepParameter.NewStepParameter(
-                    "operation"
+                    "url"
                     , string.Empty
-                    , "Connection string utilizada na execução de scripts SQL")
+                    , "Repository URL")
             );
 
             return parameters;
@@ -75,13 +76,37 @@ namespace Kame.Core.Entity
                 this.depth = parameter.ParameterValue;
             }
             catch { }
+
+            try
+            {
+                parameter = step.GetParameter("relativeworkspacepath");
+                this.relativeWorkspacePath = parameter.ParameterValue;
+            }
+            catch { }
+
             
+
             Parameter parametroWorkspace = step.GetParameter("workspace");
         }
 
         private void CloneOrPull(out string errorMessage)
         {
             string parameters = "clone " + url;
+            string localPath = this.workspace;
+
+            if (!string.IsNullOrEmpty(this.relativeWorkspacePath))
+            {
+                if (!localPath.EndsWith("\\"))
+                {
+                    localPath += "\\";
+                }
+
+                if (this.relativeWorkspacePath.StartsWith("\\"))
+                {
+                    this.relativeWorkspacePath = this.relativeWorkspacePath.Substring(1);
+                }
+                localPath += this.relativeWorkspacePath;
+            }
 
             if (!string.IsNullOrEmpty(branch) && !string.IsNullOrEmpty(branch.Trim()))
             {
@@ -93,11 +118,16 @@ namespace Kame.Core.Entity
                 parameters += " --depth " + depth;
             }
 
+            if (!string.IsNullOrEmpty(folderName))
+            {
+                parameters += " " + folderName;
+            }
+
             errorMessage = string.Empty;
             System.Diagnostics.Process p = new System.Diagnostics.Process();
             p.StartInfo.FileName = "git";
 
-            p.StartInfo.WorkingDirectory = this.workspace;
+            p.StartInfo.WorkingDirectory = localPath;
             p.StartInfo.Arguments = parameters;
             p.StartInfo.UseShellExecute = false;
             p.StartInfo.RedirectStandardOutput = false;
@@ -128,20 +158,19 @@ namespace Kame.Core.Entity
                 repositoriName = folderName;
             }
 
-            string pullFolder = this.workspace;
-            if (!pullFolder.EndsWith("\\"))
+            if (!localPath.EndsWith("\\"))
             {
-                pullFolder += "\\";
+                localPath += "\\";
             }
-            pullFolder += repositoriName;
-            if (!pullFolder.EndsWith("\\"))
+            localPath += repositoriName;
+            if (!localPath.EndsWith("\\"))
             {
-                pullFolder += "\\";
+                localPath += "\\";
             }
 
 
             p.StartInfo.Arguments = "pull";
-            p.StartInfo.WorkingDirectory = pullFolder;
+            p.StartInfo.WorkingDirectory = localPath;
 
             try
             {

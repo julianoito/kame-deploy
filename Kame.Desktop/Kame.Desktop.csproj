@@ -29,7 +29,7 @@
     <WebPage>publish.htm</WebPage>
     <AutorunEnabled>true</AutorunEnabled>
     <ApplicationRevision>4</ApplicationRevision>
-    <ApplicationVersion>1.0.1.4</ApplicationVersion>
+    <ApplicationVersion>1.1.1.4</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>

@@ -46,11 +46,18 @@ namespace Kame.Management.Desktop
                 }
             }
 
+            this.tvSteps.ContextMenuStrip = new ContextMenuStrip();
+
             ToolStripMenuItem menu = new ToolStripMenuItem();
             menu.Text = "Adicionar Step";
             menu.Click += btnAddStep_Click;
-            this.tvSteps.ContextMenuStrip = new ContextMenuStrip();
             this.tvSteps.ContextMenuStrip.Items.Add(menu);
+
+            menu = new ToolStripMenuItem();
+            menu.Text = "Excluir Step";
+            menu.Click += btnDeleteStep_Click;
+            this.tvSteps.ContextMenuStrip.Items.Add(menu);
+
             this.tvSteps.ExpandAll();
 
             this.btnSaveAs.Visible = Config.ApplicationMode == Config.AppMode.File;
@@ -78,10 +85,12 @@ namespace Kame.Management.Desktop
 
         private void AddStepToTreeView(Step step, TreeNodeCollection nodeList)
         {
+            step.StepID = Guid.NewGuid().ToString();
+
             TreeNode treeNode = new TreeNode();
             treeNode.Name = step.Name;
             treeNode.Text = this.GetStepDescription(step);
-            treeNode.Tag = Guid.NewGuid().ToString();
+            treeNode.Tag = step.StepID;
             treeNode.ContextMenuStrip = new ContextMenuStrip();
 
             treeNode.ImageIndex = GetStepIconIndex(step);
@@ -142,6 +151,7 @@ namespace Kame.Management.Desktop
             FileInfo fileInfo = new FileInfo(fileName);
             Config.SetConfig("last-file-config-folder", fileInfo.Directory.FullName);
 
+            RemoveStepIds(null);
             string content = Config.CurrentDeployConfig.DeployProject.Serialize();
 
             if (File.Exists(fileName))
@@ -198,7 +208,22 @@ namespace Kame.Management.Desktop
                     AddStepToTreeView(Config.FrmStep.Step, tvSteps.Nodes);
                 }
             }
-            
+        }
+
+        private void btnDeleteStep_Click(object sender, EventArgs e)
+        {
+            string tag = ((ToolStripMenuItem)sender).Tag as string;
+            if (!string.IsNullOrEmpty(tag) && this._treeStepMap.ContainsKey(tag))
+            {
+                if (MessageBox.Show("Deseja excluir este step?", "Exclusão de step", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                {
+                    this._treeStepMap.Remove(tag);
+                    this._treeNodeMap[tag].Remove();
+                    this._treeNodeMap.Remove(tag);
+                    this.RemoveStep(null, tag);
+                }
+
+            }
         }
 
         private void FrmDeployConfig_Shown(object sender, EventArgs e)
@@ -226,10 +251,7 @@ namespace Kame.Management.Desktop
             }
         }
 
-        private void btnDeleteStep_Click(object sender, EventArgs e)
-        {
 
-        }
 
         private void btnSave_Click(object sender, EventArgs e)
         {
@@ -237,6 +259,20 @@ namespace Kame.Management.Desktop
             {
                 case Config.AppMode.File:
                     SaveFile(Config.CurrentDeployConfig!=null ? Config.CurrentDeployConfig.Id : string.Empty );
+                    break;
+                case Config.AppMode.DataBase:
+
+
+                    if (string.IsNullOrEmpty(this.txtName.Text.Trim()))
+                    {
+                        MessageBox.Show("O nome do step não foi preenchido", "Erro ao salvar projeto", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    RemoveStepIds(null);
+                    Config.CurrentDeployConfig.Name = this.txtName.Text;
+                    Config.CurrentDeployConfig.DeployProject.Name = this.txtName.Text;
+                    Config.DbContext.SaveDeployProject(Config.CurrentDeployConfig);
+                    this.Close();
                     break;
             }
         }
@@ -248,6 +284,57 @@ namespace Kame.Management.Desktop
                 case Config.AppMode.File:
                     SaveFile(string.Empty);
                     break;
+            }
+        }
+
+        private void RemoveStepIds(Step step)
+        {
+            List<Step> stepList= null;
+            if (step == null)
+            {
+                stepList = Config.CurrentDeployConfig.DeployProject.Steps;
+            }
+            else
+            {
+                stepList = step.ChildSteps;
+            }
+
+            if (stepList != null)
+            {
+                foreach (Step childStep in stepList)
+                {
+                    childStep.StepID = string.Empty;
+                    RemoveStepIds(childStep);
+                }
+            }
+        }
+
+        private void RemoveStep(Step step, string stepId)
+        {
+            List<Step> stepList = null;
+            if (step == null)
+            {
+                stepList = Config.CurrentDeployConfig.DeployProject.Steps;
+            }
+            else
+            {
+                stepList = step.ChildSteps;
+            }
+
+            if (stepList != null)
+            {
+                for (int i=0; i<stepList.Count; i++)
+                {
+                    if (stepList[i].StepID == stepId)
+                    {
+                        stepList.RemoveAt(i);
+                    }
+                    else
+                    {
+                        RemoveStep(stepList[i], stepId);
+                    }
+                    
+                }
             }
         }
 

@@ -13,8 +13,6 @@ namespace Kame.Core.Entity.Log
 {
     public class DeployLog
     {
-        private const string localConnectionStringLog = "Data Source=\"{0}\"; Password=\"0000\"";
-
         [XmlIgnore]
         public DeployProject Projeto { get; set; }
         public int CodigoDeploy { get; set; }
@@ -22,8 +20,6 @@ namespace Kame.Core.Entity.Log
         private int DeployStepDetailID {get;set;}
         public DateTime Data { get; set; }
         public List<StepLog> StepLogs{ get; set;}
-
-        private string caminhoArquivo = string.Empty;
 
         public DeployLog()
         { 
@@ -33,28 +29,7 @@ namespace Kame.Core.Entity.Log
         {
             this.Projeto = projeto;
 
-            this.caminhoArquivo = DeployLog.GetLogFileName(projeto, true);
-            
             this.StepLogs = new List<StepLog>();
-        }
-
-        public static string GetLogFileName(DeployProject project, bool creatFolder)
-        {
-            string filename = project.GetParameter("workspace").ParameterValue;
-
-            if (filename[filename.Length - 1] != '\\')
-            {
-                filename += "\\";
-            }
-
-            if (!Directory.Exists(filename + ".kame") && creatFolder)
-            {
-                Directory.CreateDirectory(filename + ".kame");
-            }
-
-            filename += ".kame\\log_" + project.ProjectID + ".sdf";
-
-            return filename;
         }
 
         public void StartStepLog(Step step)
@@ -111,7 +86,7 @@ namespace Kame.Core.Entity.Log
         {
             string xmlFile = this.Projeto.GetParameter("workspace").ParameterValue;
 
-            if (xmlFile[xmlFile.Length - 1] != '\\')
+            if (!xmlFile.EndsWith("\\"))
             {
                 xmlFile += "\\";
             }
@@ -124,13 +99,13 @@ namespace Kame.Core.Entity.Log
             StreamWriter sw = null;
             try
             {
-                xmlFile += ".kame\\log_" + this.Projeto.ProjectID + ".xml";
+                xmlFile += ".kame\\log_" + ( string.IsNullOrEmpty(this.Projeto.ProjectID) ? this.Projeto.Name.Replace(" ","") : this.Projeto.ProjectID) + ".xml";
                 if (File.Exists(xmlFile))
                 {
                     File.Delete(xmlFile);
                 }
 
-                DeployLogXML xmlDeploy = new DeployLogXML();
+                /*DeployLogXML xmlDeploy = new DeployLogXML();
                 xmlDeploy.ProjectName = this.Projeto.Name;
                 xmlDeploy.DeployCode = this.CodigoDeploy;
                 xmlDeploy.Data = this.Data;
@@ -148,12 +123,12 @@ namespace Kame.Core.Entity.Log
                     stepLogXml.StepLogDetails = stepLog.StepLogDetails;
 
                     xmlDeploy.StepLogs.Add(stepLogXml);
-                }
+                }*/
 
                 sw = new StreamWriter(File.OpenWrite(xmlFile));
 
                 XmlSerializer serializer = new XmlSerializer(typeof(DeployLogXML));
-                serializer.Serialize(sw, xmlDeploy);
+                serializer.Serialize(sw, GetXMlObject());
 
             }
             catch (Exception ex)
@@ -168,6 +143,32 @@ namespace Kame.Core.Entity.Log
                 }
             }
         }
+
+        public DeployLogXML GetXMlObject()
+        {
+            DeployLogXML xmlDeploy = new DeployLogXML();
+            xmlDeploy.ProjectName = this.Projeto.Name;
+            xmlDeploy.DeployCode = this.CodigoDeploy;
+            xmlDeploy.Data = this.Data;
+            xmlDeploy.StepLogs = new List<DeployStepLogXML>();
+
+            foreach (StepLog stepLog in StepLogs)
+            {
+                DeployStepLogXML stepLogXml = new DeployStepLogXML();
+                stepLogXml.StepName = stepLog.Step.Name;
+                stepLogXml.StartDate = stepLog.StartDate;
+                stepLogXml.EndDate = stepLog.EndDate;
+                stepLogXml.Message = stepLog.Message;
+                stepLogXml.StepLogDetails = new List<StepLogDetail>();
+
+                stepLogXml.StepLogDetails = stepLog.StepLogDetails;
+
+                xmlDeploy.StepLogs.Add(stepLogXml);
+            }
+            
+            return xmlDeploy;
+        }
+
     }
 
     public class StepLog
@@ -200,6 +201,7 @@ namespace Kame.Core.Entity.Log
 
     public class DeployLogXML
     {
+        public string ProjectId { get; set; }
         public string ProjectName { get; set; }
         public int DeployCode { get; set; }
         public DateTime Data { get; set; }

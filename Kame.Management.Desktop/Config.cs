@@ -16,6 +16,8 @@ namespace Kame.Management.Desktop
         public static FrmDatabaseConnect FrmDatabaseConnect { get; set; }
         public static FrmDeployConfig FrmDeployConfig { get; set; }
         public static FrmStep FrmStep { get; set; }
+
+        public static FrmUser FrmUser { get; set; }
         public static byte ApplicationMode { get; set; }
 
         public static DeployConfig CurrentDeployConfig { get; set; }

@@ -1,4 +1,5 @@
-﻿using Kame.Management.Core.Entity;
+﻿using Kame.Core.Entity;
+using Kame.Management.Core.Entity;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,6 +20,16 @@ namespace Kame.Management.Desktop
         {
             InitializeComponent();
             _menuList = new Label[] { lblMenuDeploys, lblMenuUsers };
+
+            this.lstViewData.ContextMenuStrip = new ContextMenuStrip();
+            ToolStripMenuItem menu = new ToolStripMenuItem();
+            menu.Text = "Editar";
+            menu.Click += btnEditRecord_Click;
+            this.lstViewData.ContextMenuStrip.Items.Add(menu);
+            menu = new ToolStripMenuItem();
+            menu.Text = "Excluir";
+            menu.Click += btnDeleteRecord_Click;
+            this.lstViewData.ContextMenuStrip.Items.Add(menu);
         }
 
         private void FrmKameManager_Load(object sender, EventArgs e)
@@ -77,7 +88,7 @@ namespace Kame.Management.Desktop
 
         private void ListDeploys()
         {
-            lstData.Items.Clear();
+            lstViewData.Items.Clear();
 
             switch (Config.ApplicationMode)
             {
@@ -101,11 +112,30 @@ namespace Kame.Management.Desktop
                     }
                     break;
             }
+
+            lstViewData.Columns.Clear();
+            if (_depoloyList.Count == 0)
+            {
+                lstViewData.Columns.Add(" ", 300, HorizontalAlignment.Left);
+                lstViewData.Items.Add("Nenhuma configuração de deploy encontrada");
+                lstViewData.Enabled = false;
+            }
+            else
+            {
+                lstViewData.Columns.Add("Nome", 300, HorizontalAlignment.Left);
+
+                foreach (DeployConfig deploy in _depoloyList)
+                {
+                    ListViewItem item = new ListViewItem(deploy.Name);
+                    lstViewData.Items.Add(item);
+                }
+                lstViewData.Enabled = true;
+            }
         }
 
         private void ListUsers()
         {
-            lstData.Items.Clear();
+            lstViewData.Items.Clear();
             _userList = null;
             switch (Config.ApplicationMode)
             {
@@ -131,18 +161,25 @@ namespace Kame.Management.Desktop
                     break;
             }
 
+            lstViewData.Columns.Clear();
             if (_userList.Count == 0)
             {
-                lstData.Items.Add("Nenhum usuário encontrado" );
-                lstData.Enabled = false;
+                lstViewData.Columns.Add(" ", 300, HorizontalAlignment.Left);
+                lstViewData.Items.Add("Nenhum usuário encontrado" );
+                lstViewData.Enabled = false;
             }
             else
             {
+                lstViewData.Columns.Add("Nome", 300, HorizontalAlignment.Left);
+                lstViewData.Columns.Add("Perfil", 200, HorizontalAlignment.Left);
+
                 foreach (User user in _userList)
                 {
-                    lstData.Items.Add(user.Name);
+                    ListViewItem item = new ListViewItem(user.Name);
+                    item.SubItems.Add((user.Profile == UserProfile.Administrator ? "Admin" : "User"));
+                    lstViewData.Items.Add(item);
                 }
-                lstData.Enabled = true;
+                lstViewData.Enabled = true;
             }
         }
 
@@ -161,9 +198,91 @@ namespace Kame.Management.Desktop
                         Config.FrmDeployConfig = new FrmDeployConfig();
                     }
                     Config.FrmDeployConfig.ShowDialog();
+                    ListDeploys();
+
                     break;
                 case "Users":
+                    if (Config.FrmUser == null)
+                    {
+                        Config.FrmUser = new FrmUser();
+                    }
+                    Config.FrmUser.User = null;
+                    Config.FrmUser.ShowDialog();
                     ListUsers();
+                    break;
+            }
+        }
+
+        private void btnEditRecord_Click(object sender, EventArgs e)
+        {
+            if (lstViewData.SelectedIndices.Count == 0 || lstViewData.SelectedIndices[0] < 0)
+            {
+                return;
+            }
+
+            switch (_currentMenu)
+            {
+                case "Deploys":
+                    if (lstViewData.SelectedIndices[0] >= this._depoloyList.Count)
+                    {
+                        return;
+                    }
+
+                    string deployConfig = _depoloyList[lstViewData.SelectedIndices[0]].DeployProject.Serialize();
+                    Config.CurrentDeployConfig = new DeployConfig();
+                    Config.CurrentDeployConfig.Id = _depoloyList[lstViewData.SelectedIndices[0]].Id;
+                    Config.CurrentDeployConfig.Name = _depoloyList[lstViewData.SelectedIndices[0]].Name;
+
+                    Config.CurrentDeployConfig.DeployProject = DeployProject.Deserialize(deployConfig);
+
+                    if (Config.FrmDeployConfig == null)
+                    {
+                        Config.FrmDeployConfig = new FrmDeployConfig();
+                    }
+                    Config.FrmDeployConfig.ShowDialog();
+                    ListDeploys();
+                    break;
+                case "Users":
+                    if (lstViewData.SelectedIndices[0] >= _userList.Count)
+                    {
+                        return;
+                    }
+
+                    if (Config.FrmUser == null)
+                    {
+                        Config.FrmUser = new FrmUser();
+                    }
+                    Config.FrmUser.User = _userList[lstViewData.SelectedIndices[0]];
+                    Config.FrmUser.ShowDialog();
+                    ListUsers();
+
+                    break;
+            }
+        }
+
+        private void btnDeleteRecord_Click(object sender, EventArgs e)
+        {
+            if (lstViewData.SelectedIndices.Count == 0 || lstViewData.SelectedIndices[0] < 0)
+            {
+                return;
+            }
+            switch (_currentMenu)
+            {
+                case "Deploys":
+                    
+                    break;
+                case "Users":
+
+                    if (lstViewData.SelectedIndices[0] >= _userList.Count)
+                    {
+                        return;
+                    }
+
+                    if (MessageBox.Show("Deseja excluir este usuário?", "Exclusão de usuário", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+                    {
+                        Config.DbContext.DeleteUser(_userList[lstViewData.SelectedIndices[0]]);
+                        this.ListUsers();
+                    }
                     break;
             }
         }

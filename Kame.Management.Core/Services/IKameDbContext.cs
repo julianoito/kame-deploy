@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Kame.Core.Entity.Log;
 using Kame.Management.Core.Entity;
 
 namespace Kame.Management.Core.Services
@@ -15,5 +15,20 @@ namespace Kame.Management.Core.Services
 
         public abstract bool CheckUserTable(bool createTable);
         public abstract bool CheckDeployConfigTable(bool createTable);
+
+        public abstract bool CheckDeployExecutionLogTable(bool createTable);
+
+        public abstract void SaveUser(User user);
+        public abstract void DeleteUser(User user);
+
+        public abstract void SaveDeployProject(DeployConfig deployConfig);
+        public abstract void DeleteDeployConfig(DeployConfig deployConfig);
+
+        public abstract DeployConfig FindDeployConfigByName(string name);
+
+        public abstract DeployConfig FindDeployConfigById(string id);
+
+        public abstract void SaveDeployExecution(DeployLogXML deployLog);
+
     }
 }
