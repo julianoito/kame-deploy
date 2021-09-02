@@ -42,6 +42,11 @@ namespace Kame.Management.Api
                                   });
             });
 
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("user", policy => policy.RequireClaim("Kame", "user"));
+            });
+
             var key = Encoding.UTF8.GetBytes(Configuration["Kame:ApiKey"]);
             services.AddAuthentication(x =>
             {
@@ -59,7 +64,6 @@ namespace Kame.Management.Api
                     ValidateIssuer = false,
                     ValidateAudience = false
                 };
-                x.Authority = "http://localhost:54249";
             });
 
             string databaseType = Configuration.GetSection("Kame:DatabaseType").Value;
@@ -99,6 +103,7 @@ namespace Kame.Management.Api
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

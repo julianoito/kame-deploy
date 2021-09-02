@@ -31,7 +31,7 @@ namespace Kame.Management.Api.Controllers
         }
 
         [HttpGet("getbyname/{projectName}")]
-        //[Authorize]
+        [Authorize("user")]
         public ActionResult<dynamic> GetByName(string projectName)
         {
             if (string.IsNullOrEmpty(projectName))
@@ -53,7 +53,7 @@ namespace Kame.Management.Api.Controllers
         }
 
         [HttpGet("getbyid/{projectId}")]
-        //[Authorize]
+        [Authorize("user")]
         public ActionResult<dynamic> GetById(string projectId)
         {
             if (string.IsNullOrEmpty(projectId))
@@ -75,7 +75,7 @@ namespace Kame.Management.Api.Controllers
         }
 
         [HttpPost("executionLogById/{projectId}")]
-        //[Authorize]
+        [Authorize("user")]
         public ActionResult<dynamic> PostExecutionLogById(string projectId, [FromBody] DeployLogXML log)
         {
             IKameDbContext dbContext = (IKameDbContext)HttpContext.RequestServices.GetService(typeof(IKameDbContext));
@@ -86,7 +86,7 @@ namespace Kame.Management.Api.Controllers
         }
 
         [HttpPost("executionLogByName/{projectName}")]
-        //[Authorize]
+        [Authorize("user")]
         public ActionResult<dynamic> PostExecutionLogByName(string projectName, [FromBody] DeployLogXML log)
         {
             IKameDbContext dbContext = (IKameDbContext)HttpContext.RequestServices.GetService(typeof(IKameDbContext));
